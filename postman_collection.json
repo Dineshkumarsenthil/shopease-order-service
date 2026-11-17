@@ -1,0 +1,681 @@
+{
+  "info": {
+    "name": "ShopEase Order Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8004"
+    },
+    {
+      "key": "customer_token",
+      "value": ""
+    },
+    {
+      "key": "other_customer_token",
+      "value": ""
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "invalid_token",
+      "value": "abc.def.ghi"
+    },
+    {
+      "key": "order_id",
+      "value": "1"
+    },
+    {
+      "key": "order_number",
+      "value": ""
+    },
+    {
+      "key": "shipped_order_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Create order (valid)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"product_id\": 3,\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address_id\": 5,\n  \"notes\": \"Please deliver during evening hours\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const j = pm.response.json();",
+              "if (j.id) { pm.collectionVariables.set('order_id', j.id); pm.collectionVariables.set('order_number', j.order_number); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Create order - invalid product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"product_id\": 99999,\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address_id\": 5\n}"
+        }
+      }
+    },
+    {
+      "name": "03 Create order - inactive product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"product_id\": 1000,\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address_id\": 5\n}"
+        }
+      }
+    },
+    {
+      "name": "04 Create order - insufficient stock",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 100\n    }\n  ],\n  \"shipping_address_id\": 5\n}"
+        }
+      }
+    },
+    {
+      "name": "05 Create order - invalid address",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address_id\": 99999\n}"
+        }
+      }
+    },
+    {
+      "name": "06 Create order - no token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"product_id\": 3,\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address_id\": 5,\n  \"notes\": \"Please deliver during evening hours\"\n}"
+        }
+      }
+    },
+    {
+      "name": "07 Create order - invalid token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{invalid_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"product_id\": 3,\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address_id\": 5,\n  \"notes\": \"Please deliver during evening hours\"\n}"
+        }
+      }
+    },
+    {
+      "name": "08 List my orders",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": []
+        }
+      }
+    },
+    {
+      "name": "09 Get another user's order",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{other_customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{order_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{order_id}}"
+          ],
+          "query": []
+        }
+      }
+    },
+    {
+      "name": "10 Get by order number",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/number/{{order_number}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "number",
+            "{{order_number}}"
+          ],
+          "query": []
+        }
+      }
+    },
+    {
+      "name": "11a Pagination",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/?page=1&page_size=2",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "page_size",
+              "value": "2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "11b Filter by status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/?status=PENDING",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "PENDING"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "11c Filter by date range",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/?date_from=2026-11-01&date_to=2026-11-30",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            ""
+          ],
+          "query": [
+            {
+              "key": "date_from",
+              "value": "2026-11-01"
+            },
+            {
+              "key": "date_to",
+              "value": "2026-11-30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Order items",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{order_id}}/items",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{order_id}}",
+            "items"
+          ],
+          "query": []
+        }
+      }
+    },
+    {
+      "name": "12 Admin updates status -> CONFIRMED",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{order_id}}/status",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{order_id}}",
+            "status"
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"order_status\": \"CONFIRMED\"\n}"
+        }
+      }
+    },
+    {
+      "name": "13 Customer updates status (403)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{order_id}}/status",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{order_id}}",
+            "status"
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"order_status\": \"CONFIRMED\"\n}"
+        }
+      }
+    },
+    {
+      "name": "14 Invalid transition -> DELIVERED",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{order_id}}/status",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{order_id}}",
+            "status"
+          ],
+          "query": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"order_status\": \"DELIVERED\"\n}"
+        }
+      }
+    },
+    {
+      "name": "15 Cancel eligible order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{order_id}}/cancel",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{order_id}}",
+            "cancel"
+          ],
+          "query": []
+        }
+      }
+    },
+    {
+      "name": "18 Repeat cancel (stock not restored twice)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{order_id}}/cancel",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{order_id}}",
+            "cancel"
+          ],
+          "query": []
+        }
+      }
+    },
+    {
+      "name": "16 Cancel shipped/delivered order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/orders/{{shipped_order_id}}/cancel",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "{{shipped_order_id}}",
+            "cancel"
+          ],
+          "query": []
+        }
+      }
+    }
+  ]
+}
